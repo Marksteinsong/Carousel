@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta charset="UTF-8">
+    <title>轮播图</title>
+    <style>
+        img{
+            width: 100%;
+            height: 100%;
+        }
+        .li{
+            width: 800px;
+            float: left;
+            list-style: none;
+        }
+
+        .ul{
+            width: 6000px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 800px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <ul id="carUl" class="ul">
+        <li class="li" >0<img src="imgs/1.jpg"></li>
+        <li class="li">1<img src="imgs/2.jpg"></li>
+        <li class="li" >2<img src="imgs/3.jpg"></li>
+        <li class="li" >3<img src="imgs/4.jpg"></li>
+        <li class="li">0 副本<img src="imgs/1.jpg"></li>
+    </ul>
+</div>
+<button id="turnRight">向右</button>
+<script>
+    //过渡动画时间为零
+    const pageReady=function(callback){
+        window.addEventListener("load",function (e) {callback(e)})
+    };
+    
+    const main=function () {
+        const config={
+            count:0,
+            direction:"left",
+            //必须大于1000
+            speed:4000
+        };
+        const ul=document.getElementById("carUl");
+        const liNumber=document.getElementsByClassName("li").length;
+
+        //转场动画
+        const translation=function (count,tran=true) {
+            ul.style.transition=tran?"all 1s":"";
+            ul.style.transform = `translate(${-800*count}px)`;
+        };
+        //复位
+        const backState=function () {
+            setTimeout(function () {
+                console.log("专场");
+                config.count=0;
+                ul.style.transition="";
+                ul.style.transform = `translate(${-800*config.count}px)`;
+            },1000)
+        };
+        //向左播放
+        const left=function () {
+            config.count++;
+            translation(config.count);
+            liNumber===config.count+1?backState():"";
+        };
+        //向右播放
+        const right=function () {
+            if(config.count===0){
+                //无动画切换到最后一帧
+                config.count=liNumber-1;
+                translation(config.count,false );
+                console.log(config.count);
+                setTimeout(function () {
+                    config.count--;
+                    translation(config.count);
+                },500);
+                return;
+            }
+            config.count--;
+            translation(config.count);
+        };
+        //判断方向
+        const move=function () {
+            config.direction==="left"?left():right();
+        };
+
+        //入口1
+        const timer=setInterval(move,config.speed);
+        //入口2
+        const turnRight=document.getElementById("turnRight");
+        turnRight.addEventListener("click",function () {
+            config.direction="right";
+        });
+    };
+    pageReady(main);
+</script>
+</body>
+</html>
